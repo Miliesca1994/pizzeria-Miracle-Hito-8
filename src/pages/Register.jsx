@@ -1,107 +1,107 @@
-import { useState } from "react";
+
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 const Register = () => {
+  const { register } = useContext(UserContext);
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [mensaje, setMensaje] = useState("");
-  const [tipoMensaje, setTipoMensaje] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const validarFormulario = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    if (
-      email.trim() === "" ||
-      password.trim() === "" ||
-      confirmPassword.trim() === ""
-    ) {
-      setMensaje("Todos los campos son obligatorios.");
-      setTipoMensaje("danger");
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
       return;
     }
 
     if (password.length < 6) {
-      setMensaje("La contraseña debe tener al menos 6 caracteres.");
-      setTipoMensaje("danger");
+      setError("La contraseña debe tener al menos 6 caracteres");
       return;
     }
 
-    if (password !== confirmPassword) {
-      setMensaje("Las contraseñas no coinciden.");
-      setTipoMensaje("danger");
-      return;
+    setLoading(true);
+
+    try {
+      await register(email, password);
+      alert("¡Registro exitoso!");
+      navigate("/profile");
+    } catch (err) {
+      setError(err.message || "Error al registrarse");
+    } finally {
+      setLoading(false);
     }
-
-    setMensaje("Registro exitoso.");
-    setTipoMensaje("success");
-
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
   };
 
   return (
     <div className="container my-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card shadow p-4">
-            <h2 className="text-center mb-4">Registro</h2>
+      <h2 className="text-center mb-4">
+        Crear cuenta
+      </h2>
 
-            {mensaje && (
-              <div className={`alert alert-${tipoMensaje}`}>
-                {mensaje}
-              </div>
-            )}
-
-            <form onSubmit={validarFormulario}>
-              <div className="mb-3">
-                <label className="form-label">Email</label>
-
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="Ingresa tu email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-
-              <div className="mb-3">
-                <label className="form-label">Contraseña</label>
-
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Ingresa tu contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-
-              <div className="mb-3">
-                <label className="form-label">
-                  Confirmar contraseña
-                </label>
-
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Confirma tu contraseña"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary w-100"
-              >
-                Registrarse
-              </button>
-            </form>
-          </div>
+      <form
+        onSubmit={handleSubmit}
+        className="mx-auto"
+        style={{ maxWidth: "400px" }}
+      >
+        <div className="mb-3">
+          <label className="form-label">
+            Correo electrónico
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      </div>
+
+        <div className="mb-3">
+          <label className="form-label">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">
+            Confirmar contraseña
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        {error && (
+          <p className="text-danger">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          className="btn btn-success w-100"
+          disabled={loading}
+        >
+          {loading ? "Registrando..." : "Registrarse"}
+        </button>
+      </form>
     </div>
   );
 };

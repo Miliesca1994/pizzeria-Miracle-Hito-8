@@ -1,91 +1,82 @@
-import { useState } from "react";
+
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 const Login = () => {
+  const { login } = useContext(UserContext);
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mensaje, setMensaje] = useState("");
-  const [tipoMensaje, setTipoMensaje] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const validarLogin = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    if (email.trim() === "" || password.trim() === "") {
-      setMensaje("Todos los campos son obligatorios.");
-      setTipoMensaje("danger");
-      return;
+    try {
+      await login(email, password);
+      alert("¡Inicio de sesión exitoso!");
+      navigate("/profile");
+    } catch (err) {
+      setError(err.message || "Error al iniciar sesión");
+    } finally {
+      setLoading(false);
     }
-
-    if (password.length < 6) {
-      setMensaje("La contraseña debe tener al menos 6 caracteres.");
-      setTipoMensaje("danger");
-      return;
-    }
-
-    setMensaje("Inicio de sesión exitoso.");
-    setTipoMensaje("success");
-
-    setEmail("");
-    setPassword("");
   };
 
   return (
     <div className="container my-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card shadow p-4">
+      <h2 className="text-center mb-4">
+        Iniciar sesión
+      </h2>
 
-            <h2 className="text-center mb-4">
-              Iniciar Sesión
-            </h2>
-
-            {mensaje && (
-              <div className={`alert alert-${tipoMensaje}`}>
-                {mensaje}
-              </div>
-            )}
-
-            <form onSubmit={validarLogin}>
-
-              <div className="mb-3">
-                <label className="form-label">
-                  Email
-                </label>
-
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="Ingresa tu email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-
-              <div className="mb-3">
-                <label className="form-label">
-                  Contraseña
-                </label>
-
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Ingresa tu contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary w-100"
-              >
-                Iniciar Sesión
-              </button>
-
-            </form>
-
-          </div>
+      <form
+        onSubmit={handleSubmit}
+        className="mx-auto"
+        style={{ maxWidth: "400px" }}
+      >
+        <div className="mb-3">
+          <label className="form-label">
+            Correo electrónico
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      </div>
+
+        <div className="mb-3">
+          <label className="form-label">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        {error && (
+          <p className="text-danger">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          className="btn btn-primary w-100"
+          disabled={loading}
+        >
+          {loading ? "Ingresando..." : "Iniciar sesión"}
+        </button>
+      </form>
     </div>
   );
 };

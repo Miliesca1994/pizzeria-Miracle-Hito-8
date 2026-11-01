@@ -1,131 +1,92 @@
-# 🍕 Pizzería Miracle since 1994 – Hito 7
+# 🍕 Pizzería Miracle – Hito 8
 
-## 📌 Descripción del proyecto
+## Proyecto Final de React – Desafío Latam
 
-Pizzería Miracle since 1994 es una aplicación web desarrollada con React y Vite como parte del Hito 7 – Pizzería Mamma Mía de Desafío Latam.
+Aplicación web desarrollada con **React y Vite** para una pizzería ficticia llamada **Pizzería Miracle since 1994**.
 
-En esta etapa se implementan rutas protegidas mediante React Router DOM, autenticación simulada utilizando Context API y navegación dinámica hacia los detalles de cada pizza mediante el hook `useParams`.
+Este proyecto corresponde al **Hito 8 del módulo de React**, donde se implementa autenticación de usuarios mediante JWT, consumo de una API REST, rutas protegidas y simulación de compras.
 
-El proyecto continúa las funcionalidades desarrolladas en los hitos anteriores, incluyendo el carrito de compras y la administración global de productos.
+## 🚀 Tecnologías utilizadas
 
-## 🚀 Funcionalidades
-
-- Visualización del catálogo de seis pizzas.
-- Navegación dinámica hacia los detalles de cada pizza.
-- Obtención del identificador mediante `useParams`.
-- Consulta de información mediante `fetch` a una API local simulada.
-- Visualización de imágenes, ingredientes, descripciones y precios.
-- Incorporación de pizzas al carrito de compras.
-- Administración del carrito mediante `CartContext`.
-- Aumento y disminución de cantidades.
-- Cálculo automático del total de compras.
-- Implementación de `UserContext` para manejar un token simulado.
-- Funcionalidad Logout para cerrar sesión.
-- Visualización condicional de botones en Navbar.
-- Protección de la ruta `/profile`.
-- Redirección de usuarios autenticados desde Login y Register hacia Home.
-- Deshabilitación del botón Pagar cuando el usuario no está autenticado o el carrito está vacío.
-- Diseño responsivo mediante Bootstrap.
-
-## 🛠️ Tecnologías utilizadas
-
-- React 19
-- Vite 8
-- JavaScript y JSX
+- React
+- Vite
+- JavaScript (ES6+)
 - React Router DOM
-- React Context API
-- React Hooks: `useState`, `useEffect`, `useContext` y `useParams`
-- Fetch API
+- Context API
 - Bootstrap 5
-- HTML5 y CSS3
-- Git y GitHub
+- Fetch API
+- JSON Web Token (JWT)
+- Node.js y Express (backend proporcionado para el desafío)
 
-## 📂 Estructura principal
+## 📌 Funcionalidades
 
-```text
-src/
-├── componentes/
-│   ├── Navbar.jsx
-│   ├── Footer.jsx
-│   ├── Header.jsx
-│   └── CardPizza.jsx
-├── context/
-│   ├── CartContext.jsx
-│   └── UserContext.jsx
-├── pages/
-│   ├── Home.jsx
-│   ├── Cart.jsx
-│   ├── Pizza.jsx
-│   ├── Login.jsx
-│   ├── Register.jsx
-│   ├── Profile.jsx
-│   └── NotFound.jsx
-├── pizzas.js
-├── App.jsx
-└── main.jsx
-```
+### 1. Registro de usuarios
+- Registro mediante correo electrónico y contraseña.
+- Validación de contraseñas.
+- Consumo del endpoint `POST /api/auth/register`.
+- Almacenamiento del token JWT y correo electrónico en UserContext.
 
-## 🔐 Autenticación simulada
+### 2. Inicio de sesión
+- Autenticación mediante `POST /api/auth/login`.
+- Manejo de errores de autenticación.
+- Redirección al perfil después del inicio de sesión.
 
-Se implementó `UserContext.jsx` para administrar el estado de autenticación del usuario.
+### 3. Context API
+Se utiliza `UserContext` para administrar la autenticación, incluyendo los métodos:
 
-El token comienza en `true`, simulando una sesión activa.
+- `login()`
+- `register()`
+- `logout()`
+- `getProfile()`
 
-Al ejecutar `logout()`, el token cambia a `false`.
+También se utiliza `CartContext` para administrar los productos del carrito.
 
-Cuando el usuario está autenticado, Navbar muestra Profile y Logout. Cuando no está autenticado, muestra Login y Register.
+### 4. Perfil del usuario
+- Consulta al endpoint `GET /api/auth/me`.
+- Visualización del correo electrónico del usuario autenticado.
+- Botón para cerrar sesión.
+- Acceso protegido mediante React Router.
 
-Los botones Home y Total permanecen visibles en ambos estados.
+### 5. Barra de navegación
+- Home.
+- Login y Register para usuarios no autenticados.
+- Profile y Logout para usuarios autenticados.
+- Acceso al carrito con su total actualizado.
 
-La autenticación es simulada y no utiliza un servicio real de inicio de sesión.
+### 6. Catálogo de pizzas
+- Visualización de pizzas disponibles.
+- Consulta de información de pizzas desde la API.
+- Vista individual de productos.
+- Opción para agregar pizzas al carrito.
 
-## 🛡️ Rutas protegidas
+### 7. Carrito de compras
+- Visualización de productos seleccionados.
+- Aumento y disminución de cantidades.
+- Cálculo automático del total.
+- Restricción de compra para usuarios no autenticados.
 
-Se implementaron las siguientes restricciones:
+### 8. Simulación de compra
+- Envío del carrito mediante `POST /api/checkouts`.
+- Autorización utilizando el token JWT.
+- Mensaje de compra exitosa.
+- Manejo de errores de conexión o compra.
 
-- `/profile`: accesible solamente cuando el token es `true`.
-- `/login`: redirige a Home cuando el token es `true`.
-- `/register`: redirige a Home cuando el token es `true`.
-- `/pizza/:id`: permite visualizar los detalles de una pizza mediante su identificador.
+**Nota:** El checkout es una simulación académica y no procesa pagos reales.
 
-Las redirecciones se implementaron utilizando `Navigate` de React Router DOM.
+## 🛠️ Instalación y ejecución
 
-## 🍕 Consulta de pizzas con useParams
-
-La página `Pizza.jsx` utiliza `useParams` para obtener el identificador de la pizza desde la URL.
-
-Mediante `useEffect` y `fetch`, consulta el endpoint:
-
-`GET /api/pizzas/:id`
-
-Por ejemplo:
-
-`/api/pizzas/P001`
-
-La API utilizada en esta versión es una simulación local implementada mediante middleware de Vite y alimentada por los datos de `src/pizzas.js`.
-
-**Nota:** Este endpoint funciona al ejecutar el servidor de desarrollo de Vite. No está disponible automáticamente en un alojamiento estático de producción.
-
-## 🛒 Administración del carrito
-
-El carrito utiliza `CartContext` para compartir información entre componentes.
-
-Permite agregar productos, modificar cantidades y actualizar el total automáticamente.
-
-El botón Pagar permanece deshabilitado cuando el usuario no está autenticado o cuando el carrito está vacío.
-
-## 💻 Instalación y ejecución
+### Frontend
 
 Clonar el repositorio:
 
 ```bash
-git clone https://github.com/Miliesca1994/pizzeria-Miracle-Hito-7.git
+git clone https://github.com/Miliesca1994/pizzeria-Miracle-Hito-8.git
 ```
 
-Ingresar a la carpeta:
+Ingresar al proyecto:
 
 ```bash
-cd pizzeria-Miracle-Hito-7
+cd pizzeria-Miracle-Hito-8
 ```
 
 Instalar dependencias:
@@ -134,36 +95,67 @@ Instalar dependencias:
 npm install
 ```
 
-Ejecutar el proyecto:
+Iniciar el servidor de desarrollo:
 
 ```bash
 npm run dev
 ```
 
-Abrir la dirección local indicada por Vite, generalmente:
+Abrir en el navegador la dirección local indicada por Vite.
 
-`http://localhost:5173/`
+### Backend
 
-Para generar los archivos de producción:
+Este proyecto necesita el backend de apoyo del desafío, desarrollado con Node.js y Express.
+
+Desde la carpeta del backend:
 
 ```bash
-npm run build
+npm install
+npm start
 ```
 
-## ✅ Requerimientos del Hito 7
+El backend debe estar disponible en:
 
-1. Implementación de `useParams` y consulta de pizzas mediante API.
-2. Creación de `UserContext` con token simulado y método `logout`.
-3. Integración de Logout en Navbar.
-4. Deshabilitación del botón Pagar cuando el token es `false`.
-5. Implementación de rutas protegidas y redirecciones según el estado de autenticación.
+`http://localhost:5000`
 
+El frontend y el backend deben permanecer ejecutándose simultáneamente.
 
-**Autora:** Milagros Escalante
+## 🔗 Endpoints utilizados
 
-**Proyecto:** Pizzería Miracle since 1994
+| Método | Endpoint | Descripción |
+|---|---|---|
+| POST | `/api/auth/register` | Registrar usuario |
+| POST | `/api/auth/login` | Iniciar sesión |
+| GET | `/api/auth/me` | Obtener perfil autenticado |
+| GET | `/api/pizzas` | Obtener pizzas |
+| GET | `/api/pizzas/:id` | Obtener detalle de pizza |
+| POST | `/api/checkouts` | Simular compra |
 
-**Desafío:** Hito 7 – Pizzería Mamma Mía
+Las rutas protegidas requieren el encabezado:
 
-**Repositorio:** https://github.com/Miliesca1994/pizzeria-Miracle-Hito-7
+```text
+Authorization: Bearer token_jwt
+```
 
+## 🧪 Pruebas realizadas
+
+- Registro de usuarios con el backend.
+- Inicio y cierre de sesión.
+- Visualización del perfil autenticado.
+- Navegación mediante React Router.
+- Funcionamiento del carrito de compras.
+- Compilación de producción mediante `npm run build`.
+
+## 📚 Objetivo académico
+
+Aplicar los conocimientos adquiridos durante el módulo de React de Desafío Latam, integrando React Router, Context API, autenticación JWT y comunicación entre frontend y backend.
+
+## 👩‍💻 Desarrollado por
+
+**Milagros Escalante**
+
+Desafío Latam – Módulo React
+
+GitHub: https://github.com/Miliesca1994
+
+**Proyecto:** Pizzería Miracle since 1994 🍕

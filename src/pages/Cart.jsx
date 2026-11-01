@@ -1,11 +1,56 @@
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { UserContext } from "../context/UserContext";
 
 const Cart = () => {
   const { cart, addToCart, removeFromCart, total } = useCart();
   const { token } = useContext(UserContext);
+
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // ENVIAR COMPRA AL BACKEND
+  const handleCheckout = async () => {
+    if (!token || cart.length === 0 || loading) return;
+
+    setMensaje("");
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/checkouts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            cart: cart,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Error al realizar la compra"
+        );
+      }
+
+      setMensaje("¡Compra realizada con éxito! 🍕🎉");
+    } catch (err) {
+      setError(
+        err.message || "No se pudo realizar la compra"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="container mt-5 mb-5">
@@ -70,14 +115,27 @@ const Cart = () => {
 
       <button
         className="btn btn-dark mt-3"
-        disabled={!token || cart.length === 0}
+        onClick={handleCheckout}
+        disabled={!token || cart.length === 0 || loading}
       >
-        Pagar
+        {loading ? "Procesando compra..." : "Pagar"}
       </button>
 
       {!token && (
         <div className="alert alert-warning mt-3">
           Debes iniciar sesión para realizar el pago.
+        </div>
+      )}
+
+      {mensaje && (
+        <div className="alert alert-success mt-3">
+          {mensaje}
+        </div>
+      )}
+
+      {error && (
+        <div className="alert alert-danger mt-3">
+          {error}
         </div>
       )}
     </div>
